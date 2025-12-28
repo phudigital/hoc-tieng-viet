@@ -6,10 +6,7 @@
     <title>Bé Học Tiếng Việt 1</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
     
-    <!-- 
-        LƯU Ý: Vì là file HTML tĩnh, khi bạn sửa file CSS, 
-        hãy đổi số v=1.0.3 thành v=1.0.4 thủ công để xóa cache nhé.
-    -->
+    <!-- CẬP NHẬT VERSION TẠI ĐÂY -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,41 +19,34 @@
         </header>
 
         <div class="search-box">
-            <input type="text" id="keyword" placeholder="Chữ hoặc Vần (u, t, ut, uot)" autocomplete="off">
+            <input type="text" id="keyword" placeholder="Nhập chữ cái (ví dụ: b, ang, kh...)" autocomplete="off">
             <button onclick="learnWords()">Học bài</button>
         </div>
 
-        <!-- Thông báo -->
         <div id="message-area" class="message">
             👋 Chào bé! Bé hãy nhập chữ vào ô bên trên để bắt đầu nhé.
         </div>
 
-        <!-- Kết quả Từ vựng -->
         <h3 id="title-words" class="section-title">✨ Từ vựng</h3>
         <div id="words-list" class="result-grid"></div>
 
-        <!-- Kết quả Câu -->
         <h3 id="title-sentences" class="section-title">📖 Tập đọc câu</h3>
         <div id="sentences-list" class="result-grid"></div>
 
-        <!-- Footer -->
         <div class="app-footer">
             <span id="current-date">Đang tải ngày...</span>
-            <span class="badge-version">v3.0</span>
+            <!-- CẬP NHẬT VERSION TẠI ĐÂY -->
+            <span class="badge-version">v1.0.5</span>
         </div>
     </div>
 
-    <!-- Script JS chính -->
-    <script src="script.js?v=1.0.3"></script>
+    <!-- CẬP NHẬT VERSION TẠI ĐÂY -->
+    <script src="script.js"></script>
 
-    <!-- Script nhỏ để hiện ngày tháng (Thay thế cho PHP date) -->
     <script>
-        // Lấy ngày hiện tại
         const now = new Date();
         const timeString = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
         const dateString = now.toLocaleDateString('vi-VN');
-        
-        // Hiển thị vào footer
         document.getElementById('current-date').innerHTML = `Cập nhật: <strong>${timeString} - ${dateString}</strong>`;
     </script>
 </body>
