@@ -20,7 +20,7 @@
 
 ## Truy Cập Trực Tiếp
 
-<a href="https://app.pdl.vn/hoc-tieng-viet/" target="_blank">Mở ứng dụng</a> (mở trong tab mới)
+<a href="https://app.pdl.vn/hoc-tieng-viet/" target="_blank">[Mở ứng dụng](https://app.pdl.vn/hoc-tieng-viet/)</a>
 
 ## Cài Đặt & Chạy
 
@@ -78,10 +78,6 @@ Ví dụ:
 ## Giấy Phép
 
 MIT License.
-
-## Source Code
-
-Mã nguồn: [https://github.com/phudigital/hoc-tieng-viet](https://github.com/phudigital/hoc-tieng-viet)
 
 ## Đóng Góp
 
