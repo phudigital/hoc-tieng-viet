@@ -31,7 +31,7 @@
 ### Bước Cài Đặt
 1. Clone dự án:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/phudigital/hoc-tieng-viet.git
    cd hoc-tieng-viet
    ```
 
