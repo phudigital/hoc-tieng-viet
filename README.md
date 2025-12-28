@@ -20,7 +20,7 @@
 
 ## Truy Cập Trực Tiếp
 
-<a href="https://app.pdl.vn/hoc-tieng-viet/" target="_blank">[https://app.pdl.vn/hoc-tieng-viet/]</a>
+<a href="https://app.pdl.vn/hoc-tieng-viet/" target="_blank">https://app.pdl.vn/hoc-tieng-viet/</a>
 
 ## Cài Đặt & Chạy
 
