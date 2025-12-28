@@ -1,0 +1,156 @@
+/* style.css - v1.0.3 */
+:root {
+    --primary-color: #00AEEF;
+    --accent-color: #FF9800;
+    --bg-body: #E3F2FD;
+    --card-bg: #FFFFFF;
+    --text-main: #333333;
+    --text-muted: #999999;
+    --success-color: #4CAF50;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-body);
+    margin: 0;
+    padding: 20px;
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-top: 8px solid var(--primary-color);
+}
+
+header { text-align: center; margin-bottom: 30px; }
+.logo-icon { font-size: 3.5rem; display: block; margin-bottom: 5px; }
+h1 { color: var(--primary-color); margin: 0; text-transform: uppercase; font-size: 2.2rem; }
+.subtitle { color: var(--text-muted); margin-top: 5px; font-style: italic; }
+
+.search-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+input[type="text"] {
+    padding: 12px 20px;
+    font-size: 1.4rem;
+    border: 2px solid #DDD;
+    border-radius: 50px;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+    color: var(--primary-color);
+    font-weight: bold;
+    outline: none;
+}
+
+input[type="text"]:focus { border-color: var(--accent-color); }
+
+button {
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+button:active { transform: translateY(2px); }
+
+/* Khu vực hiển thị kết quả */
+.section-title {
+    width: 100%;
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    border-bottom: 1px dashed #DDD;
+    padding-bottom: 5px;
+    margin: 30px 0 15px 0;
+    display: none;
+}
+
+.result-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Thẻ Từ vựng - Đơn giản, to rõ */
+.word-card {
+    background: #fff;
+    border: 3px solid #B3E5FC;
+    border-radius: 15px;
+    padding: 15px 30px;
+    min-width: 120px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+    transition: all 0.2s;
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #444;
+}
+
+.word-card:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: scale(1.05);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+}
+
+/* Thẻ Câu - Font to */
+.sentence-card {
+    width: 100%;
+    background-color: #F1F8E9;
+    border-left: 6px solid var(--success-color);
+    padding: 20px;
+    border-radius: 8px;
+    font-size: 1.8rem;
+    line-height: 1.5;
+    text-align: left;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.2s;
+    color: #2E7D32;
+}
+
+.sentence-card:hover { background-color: #DCEDC8; }
+
+.message {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 20px;
+}
+
+.app-footer {
+    margin-top: 40px;
+    padding-top: 15px;
+    border-top: 1px solid #EEE;
+    font-size: 0.85rem;
+    color: #AAA;
+    display: flex;
+    justify-content: space-between;
+}
+
+.badge-version {
+    background: #EEE;
+    color: #555;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
