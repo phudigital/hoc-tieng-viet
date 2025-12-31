@@ -154,3 +154,23 @@ button:active { transform: translateY(2px); }
     border-radius: 4px;
     font-weight: bold;
 }
+
+
+/* Tùy chỉnh ô nhập liệu */
+input[type="text"] {
+    /* ... các thuộc tính cũ ... */
+    transition: all 0.3s;
+}
+
+/* Định dạng cho dòng chữ mờ (Placeholder) */
+input[type="text"]::placeholder {
+    color: #bbb;       /* Màu xám nhạt */
+    font-style: italic; /* Chữ nghiêng */
+    font-weight: normal;
+    font-size: 1.2rem;
+}
+
+/* Khi bấm vào ô nhập, placeholder sẽ ẩn đi cho gọn */
+input[type="text"]:focus::placeholder {
+    opacity: 0.5;
+}
