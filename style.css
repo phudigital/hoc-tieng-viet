@@ -1,4 +1,3 @@
-/* style.css - v1.0.3 */
 :root {
     --primary-color: #00AEEF;
     --accent-color: #FF9800;
@@ -7,6 +6,7 @@
     --text-main: #333333;
     --text-muted: #999999;
     --success-color: #4CAF50;
+    --ai-color: #9C27B0;
 }
 
 body {
@@ -30,17 +30,12 @@ body {
     border-top: 8px solid var(--primary-color);
 }
 
-header { text-align: center; margin-bottom: 30px; }
+header { text-align: center; margin-bottom: 20px; }
 .logo-icon { font-size: 3.5rem; display: block; margin-bottom: 5px; }
 h1 { color: var(--primary-color); margin: 0; text-transform: uppercase; font-size: 2.2rem; }
 .subtitle { color: var(--text-muted); margin-top: 5px; font-style: italic; }
 
-.search-box {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
-}
+.search-box { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
 
 input[type="text"] {
     padding: 12px 20px;
@@ -53,12 +48,14 @@ input[type="text"] {
     color: var(--primary-color);
     font-weight: bold;
     outline: none;
+    transition: all 0.3s;
 }
-
 input[type="text"]:focus { border-color: var(--accent-color); }
+input[type="text"]::placeholder { color: #bbb; font-style: italic; font-weight: normal; font-size: 1.2rem; }
+input[type="text"]:focus::placeholder { opacity: 0.5; }
 
 button {
-    padding: 12px 15px;
+    padding: 12px 25px;
     font-size: 1.2rem;
     background-color: var(--accent-color);
     color: white;
@@ -67,29 +64,25 @@ button {
     cursor: pointer;
     font-weight: bold;
     white-space: nowrap;
+    box-shadow: 0 4px 0 #E65100;
 }
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 #E65100; }
 
-button:active { transform: translateY(2px); }
+/* TOGGLE SWITCH */
+.toggle-wrapper { display: flex; align-items: center; justify-content: center; margin-bottom: 30px; gap: 10px; }
+.switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--ai-color); }
+input:checked + .slider:before { transform: translateX(24px); }
+.ai-label { font-weight: 600; color: #888; font-size: 1rem; }
 
-/* Khu vực hiển thị kết quả */
-.section-title {
-    width: 100%;
-    font-size: 1.4rem;
-    color: var(--primary-color);
-    border-bottom: 1px dashed #DDD;
-    padding-bottom: 5px;
-    margin: 30px 0 15px 0;
-    display: none;
-}
+/* RESULT AREA */
+.section-title { width: 100%; font-size: 1.4rem; color: var(--primary-color); border-bottom: 1px dashed #DDD; padding-bottom: 5px; margin: 30px 0 15px 0; display: none; }
+.result-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
 
-.result-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-}
-
-/* Thẻ Từ vựng - Đơn giản, to rõ */
+/* WORD CARD */
 .word-card {
     background: #fff;
     border: 3px solid #B3E5FC;
@@ -104,73 +97,66 @@ button:active { transform: translateY(2px); }
     font-weight: bold;
     color: #444;
 }
+.word-card:hover { border-color: var(--accent-color); color: var(--accent-color); transform: scale(1.05); }
 
-.word-card:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    transform: scale(1.05);
-    box-shadow: 0 6px 0 rgba(0,0,0,0.1);
-}
+/* AI STYLE */
+.word-card.ai-style { border: 3px solid var(--ai-color); background-color: #F3E5F5; color: #4A148C; position: relative; }
+.word-card.ai-style::after { content: "AI"; position: absolute; top: -10px; right: -10px; background: var(--ai-color); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
 
-/* Thẻ Câu - Font to */
-.sentence-card {
-    width: 100%;
-    background-color: #F1F8E9;
-    border-left: 6px solid var(--success-color);
-    padding: 20px;
-    border-radius: 8px;
-    font-size: 1.8rem;
-    line-height: 1.5;
-    text-align: left;
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: background 0.2s;
-    color: #2E7D32;
-}
-
+/* SENTENCE CARD */
+.sentence-card { width: 100%; background-color: #F1F8E9; border-left: 6px solid var(--success-color); padding: 20px; border-radius: 8px; font-size: 1.8rem; line-height: 1.5; text-align: left; cursor: pointer; margin-bottom: 10px; color: #2E7D32; }
 .sentence-card:hover { background-color: #DCEDC8; }
 
-.message {
-    font-size: 1.2rem;
-    color: var(--text-muted);
-    text-align: center;
-    margin-top: 20px;
+.message { font-size: 1.2rem; color: var(--text-muted); text-align: center; margin-top: 20px; }
+.app-footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #EEE; font-size: 0.85rem; color: #AAA; display: flex; justify-content: space-between; }
+.badge-version { background: #EEE; color: #555; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+
+/* MODAL POPUP */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); animation: fadeIn 0.3s; }
+.modal-content { background-color: white; margin: 15% auto; padding: 30px; border: 3px solid var(--ai-color); border-radius: 20px; width: 90%; max-width: 400px; text-align: center; animation: slideDown 0.3s; }
+.modal h3 { color: var(--ai-color); margin-top: 0; }
+.modal input { width: 80%; margin: 20px 0; border: 2px solid #ddd; padding: 10px; font-size: 1.2rem; text-align: center; }
+.modal-actions { display: flex; justify-content: center; gap: 15px; }
+.btn-confirm { background-color: var(--ai-color); color: white; font-size: 1rem; padding: 10px 20px; border-radius: 5px; border:none; cursor: pointer;}
+.btn-cancel { background-color: #ccc; color: #333; font-size: 1rem; padding: 10px 20px; border-radius: 5px; border:none; cursor: pointer;}
+@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+@keyframes slideDown { from {transform: translateY(-50px);} to {transform: translateY(0);} }
+
+
+/* CSS CHO BỘ ĐẾM THỐNG KÊ */
+.stats-box {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #888;
+    background: #f9f9f9;
+    padding: 5px 15px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    display: inline-flex;
+    gap: 15px;
 }
 
+.stats-box span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: help;
+}
+
+.stats-box b {
+    color: var(--primary-color);
+}
+
+/* Chỉnh lại footer chút cho cân đối */
 .app-footer {
-    margin-top: 40px;
-    padding-top: 15px;
-    border-top: 1px solid #EEE;
-    font-size: 0.85rem;
-    color: #AAA;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#footer-info {
     display: flex;
     justify-content: space-between;
-}
-
-.badge-version {
-    background: #EEE;
-    color: #555;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-
-/* Tùy chỉnh ô nhập liệu */
-input[type="text"] {
-    /* ... các thuộc tính cũ ... */
-    transition: all 0.3s;
-}
-
-/* Định dạng cho dòng chữ mờ (Placeholder) */
-input[type="text"]::placeholder {
-    color: #bbb;       /* Màu xám nhạt */
-    font-style: italic; /* Chữ nghiêng */
-    font-weight: normal;
-    font-size: 1.2rem;
-}
-
-/* Khi bấm vào ô nhập, placeholder sẽ ẩn đi cho gọn */
-input[type="text"]:focus::placeholder {
-    opacity: 0.5;
+    width: 100%;
 }

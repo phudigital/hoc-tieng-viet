@@ -3,26 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bé Học Tiếng Việt 1</title>
+    <title>Ôn Tập Đánh Vần Lớp 1</title>
+    <meta name="description" content="Ứng dụng học tiếng Việt lớp 1, tìm từ vựng theo vần, nghe đọc từ và tập đọc câu cho bé.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-    
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:image" content="thumbnail.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:image" content="thumbnail.jpg">
+    <meta name="twitter:card" content="summary_large_image">
     <!-- CẬP NHẬT VERSION TẠI ĐÂY -->
-    <link rel="stylesheet" href="style.css?v=1.0.8">
+    <link rel="stylesheet" href="style.css?v=3.0">
 </head>
 <body>
 
     <div class="container">
         <header>
             <span class="logo-icon">🌻</span>
-            <h1>Ôn tập đánh vần</h1>
-            <p class="subtitle">Chương trình cho học sinh Lớp 1</p>
+            <h1>Ôn Tập Đánh Vần</h1>
+            <p class="subtitle">Chương trình cho học sinh lớp 1</p>
         </header>
 
+        <!-- Ô TÌM KIẾM -->
         <div class="search-box">
-            <input type="text" id="keyword" placeholder="Nhập vần (ví dụ: uon, ang, kh...)" autocomplete="off">
+            <input type="text" id="keyword" placeholder="Nhập âm/vần (ví dụ: b, ang...)" autocomplete="off">
             <button onclick="learnWords()">Tìm từ</button>
         </div>
 
+        <!-- CÔNG TẮC AI -->
+        <div class="toggle-wrapper">
+            <label class="switch">
+                <input type="checkbox" id="aiToggle">
+                <span class="slider"></span>
+            </label>
+            <span class="ai-label" id="aiLabel">Chế độ AI: Tắt</span>
+        </div>
+
+        <!-- THÔNG BÁO -->
         <div id="message-area" class="message">
             👋 Chào bé! Bé hãy nhập chữ vào ô bên trên để bắt đầu nhé.
         </div>
@@ -34,20 +54,40 @@
         <div id="sentences-list" class="result-grid"></div>
 
         <div class="app-footer">
-            <span id="current-date">Đang tải ngày...</span>
-            <!-- CẬP NHẬT VERSION TẠI ĐÂY -->
-            <span class="badge-version">v2.0</span>
+                <div id="footer-info">
+                    <span id="current-date">Loading date...</span>
+                    <span class="badge-version">v3.1</span>
+                </div>
+                
+                <!-- KHU VỰC THỐNG KÊ MỚI -->
+                <div id="visitor-stats" class="stats-box" style="display:none;">
+                    <span title="Hôm nay">📅 Ngày: <b id="stat-day"> 0 </b></span>
+                    <span title="Tháng này"> .🗓️ Tháng: <b id="stat-month"> 0 </b></span>
+                    <span title="Tổng cộng"> .👥 Tổng:  <b id="stat-total"> 0 </b></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- POPUP NHẬP MẬT KHẨU -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h3>🔒 Hết lượt miễn phí</h3>
+            <p>Máy này đã dùng hết 15 lượt hỏi Thầy giáo AI.</p>
+            <p>Vui lòng nhập mật khẩu để mở khóa.</p>
+            <input type="password" id="vipPassword" placeholder="Nhập mật khẩu..." autocomplete="new-password">
+            <div class="modal-actions">
+                <button onclick="cancelVip()" class="btn-cancel">Dùng Sách GK</button>
+                <button onclick="confirmVip()" class="btn-confirm">Mở khóa</button>
+            </div>
         </div>
     </div>
 
-    <!-- CẬP NHẬT VERSION TẠI ĐÂY -->
-    <script src="script.js"></script>
-
+    <script src="script.js?v=3.1"></script>
     <script>
         const now = new Date();
-        const timeString = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        const dateString = now.toLocaleDateString('vi-VN');
-        document.getElementById('current-date').innerHTML = `Cập nhật: <strong>${timeString} - ${dateString}</strong>`;
+        document.getElementById('current-date').innerHTML = `Ngày: <strong>${now.toLocaleDateString('vi-VN')}</strong>`;
     </script>
 </body>
 </html>

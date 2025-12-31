@@ -1,0 +1,11 @@
+# Bỏ qua file cấu hình mật
+config.php
+
+# Bỏ qua các file dữ liệu động (không nên up data người dùng lên git)
+data-ai.json
+usage.json
+stats.json
+
+# Bỏ qua file hệ thống
+.DS_Store
+Thumbs.db

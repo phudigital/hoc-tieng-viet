@@ -644,7 +644,7 @@ return [
     'uôi' => [
         'topic' => 'Chủ đề 15',
         'words' => ['nải chuối', 'chuỗi hạt', 'buổi sáng', 'cuối', 'đuôi', 'suối'],
-        'sentences' => ['Cả nhà Minh đi xem phim.', 'Mẹ mua nải chuối chín.']
+        'sentences' => ['Buổi sáng hôm nay trời rất đẹp.', 'Mẹ mua nải chuối chín.']
     ],
     'ươi' => [
         'topic' => 'Chủ đề 15',
