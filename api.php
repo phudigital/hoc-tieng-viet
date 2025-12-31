@@ -1,34 +1,31 @@
 <?php
-// api.php - Version 6.0 (Separated Logic for Async Loading)
+// api.php - Version 8.1 (Increase AI Words Quantity)
 header('Content-Type: application/json; charset=utf-8');
 
-// --- CẤU HÌNH ---
-// 1. Kiểm tra xem file config có tồn tại không
+// --- 1. LOAD CẤU HÌNH ---
 if (file_exists('config.php')) {
     $config = include('config.php');
     $DEEPSEEK_API_KEY = $config['deepseek_key'];
     $ADMIN_PASS = $config['admin_pass'];
 } else {
-    // Trường hợp lỡ quên tạo file config trên server
-    // Hoặc lấy từ biến môi trường (Environment Variable) nếu deploy chuyên nghiệp
-    $DEEPSEEK_API_KEY = getenv('DEEPSEEK_API_KEY');
-    $ADMIN_PASS = getenv('ADMIN_PASS');
+    $DEEPSEEK_API_KEY = ""; 
+    $ADMIN_PASS = "off";    
 }
 
-// ... Các cấu hình khác ...
 $AI_DB_FILE = 'data-ai.json';
 $USAGE_FILE = 'usage.json';
-$MAX_FREE_LIMIT = 15;   // Giới hạn miễn phí mỗi IP
+$MAX_FREE_LIMIT = 30;
 
 // --- NHẬN DỮ LIỆU ---
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
-$userPass = isset($_GET['password']) ? $_GET['password'] : '';
+$useAI = isset($_GET['use_ai']) && $_GET['use_ai'] === 'true';
+$userPass = isset($_GET['password']) ? $_GET['password'] : ''; 
 $userIP = $_SERVER['REMOTE_ADDR'];
 
 $dictionary = include('data.php');
 
-// --- CÁC HÀM XỬ LÝ (Giữ nguyên) ---
+// --- CÁC HÀM XỬ LÝ CHUỖI ---
 function removeTone($str) {
     $str = mb_strtolower($str, 'UTF-8');
     $str = preg_replace("/(à|á|ạ|ả|ã)/", "a", $str);
@@ -45,6 +42,7 @@ function removeTone($str) {
     $str = preg_replace("/(ỳ|ý|ỵ|ỷ|ỹ)/", "y", $str);
     return $str;
 }
+
 function removeAllAccents($str) {
     $str = mb_strtolower($str, 'UTF-8');
     $str = preg_replace("/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/", "a", $str);
@@ -56,64 +54,118 @@ function removeAllAccents($str) {
     $str = preg_replace("/(đ)/", "d", $str);
     return $str;
 }
-function checkUsageLimit($ip, $password, $limit, $adminPass, $file) {
-    if ($password === $adminPass) return ['allowed' => true, 'is_vip' => true];
+
+// --- KIỂM TRA GIỚI HẠN ---
+function checkUsageLimit($ip, $userInputPass, $limit, $adminConfigPass, $file) {
+    if ($adminConfigPass === 'off') {
+        return ['allowed' => true, 'is_vip' => true];
+    }
+    if ($userInputPass === $adminConfigPass) {
+        return ['allowed' => true, 'is_vip' => true];
+    }
     $usageData = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
     $currentCount = $usageData[$ip] ?? 0;
-    if ($currentCount >= $limit) return ['allowed' => false];
+
+    if ($currentCount >= $limit) {
+        return ['allowed' => false, 'count' => $currentCount];
+    }
     return ['allowed' => true, 'is_vip' => false];
 }
+
 function incrementUsage($ip, $file) {
     $usageData = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
     if (!isset($usageData[$ip])) $usageData[$ip] = 0;
     $usageData[$ip]++;
     file_put_contents($file, json_encode($usageData));
 }
+
+// --- BỘ LỌC TỪ VỰNG AI ---
+function filterAIWords($words, $keyword) {
+    $filtered = [];
+    $keywordRaw = mb_strtolower($keyword, 'UTF-8');
+    $keywordNoTone = removeTone($keywordRaw);
+    $keywordNoAccents = removeAllAccents($keywordRaw);
+    $isBroadMode = ($keywordNoTone === $keywordNoAccents);
+
+    foreach ($words as $word) {
+        $wordRaw = mb_strtolower($word, 'UTF-8');
+        $wordNoTone = removeTone($wordRaw);
+        $wordNoAccents = removeAllAccents($wordRaw);
+        $isValid = false;
+
+        if ($isBroadMode) {
+            if (strpos($wordNoAccents, $keywordNoAccents) !== false) $isValid = true;
+        } else {
+            if (strpos($wordNoTone, $keywordNoTone) !== false) $isValid = true;
+        }
+
+        if ($isValid) $filtered[] = $word;
+    }
+    return $filtered;
+}
+
+// --- GỌI DEEPSEEK (Đã chỉnh Prompt lên 15 từ) ---
 function callDeepSeekAI($keyword, $apiKey) {
     $url = "https://api.deepseek.com/chat/completions";
-    $userPrompt = "Đóng vai giáo viên soạn sách Tiếng Việt lớp 1 (Bộ Chân trời sáng tạo).
-    Từ khóa cần học: '$keyword'.
-    1. Tìm 6 TỪ GHÉP chứa '$keyword': Ưu tiên tên con vật, cây cối, đồ vật, hoạt động hàng ngày. Tránh từ Hán Việt khó.
-    2. Viết 5 câu văn ngắn gọn, ngây thơ, dễ đánh vần, mỗi câu chứa từ có vần '$keyword'.
-    3. Output JSON only: {\"words\":[], \"sentences\":[]}";
+    
+    // CẬP NHẬT PROMPT: Tăng số lượng yêu cầu lên 15 từ
+    $userPrompt = "Đóng vai giáo viên Tiếng Việt lớp 1. Từ khóa: '$keyword'.
+    1. Tìm 12-15 TỪ GHÉP chứa ĐÚNG vần/chữ '$keyword'. (Yêu cầu nhiều từ để lọc, ưu tiên từ đơn giản, gần gũi như con vật, đồ vật).
+    2. Viết 5 câu ngắn chứa từ khóa.
+    3. JSON format only: {\"words\":[], \"sentences\":[]}";
 
     $data = [
         "model" => "deepseek-chat",
-        "messages" => [["role" => "system", "content" => "You are a helpful JSON generator for kids education."], ["role" => "user", "content" => $userPrompt]],
-        "temperature" => 0.6
+        "messages" => [
+            ["role" => "system", "content" => "You are a strict Vietnamese spelling teacher."],
+            ["role" => "user", "content" => $userPrompt]
+        ],
+        "temperature" => 0.6 // Tăng nhẹ nhiệt độ để AI sáng tạo nhiều từ hơn
     ];
+
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Authorization: Bearer ' . $apiKey]);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    
     $result = curl_exec($ch);
     curl_close($ch);
+
     if ($result) {
         $responseObj = json_decode($result, true);
         $content = $responseObj['choices'][0]['message']['content'] ?? '';
         $content = preg_replace('/<think>[\s\S]*?<\/think>/', '', $content);
         $cleanJson = str_replace(['```json', '```'], '', $content);
-        return json_decode($cleanJson, true);
+        $data = json_decode($cleanJson, true);
+        
+        if ($data && isset($data['words'])) {
+            $data['words'] = filterAIWords($data['words'], $keyword);
+            
+            // Cắt bớt nếu kết quả sau khi lọc quá dài (Giữ lại tối đa 10 từ)
+            // Nếu bạn muốn hiện hết thì xóa dòng này đi
+            $data['words'] = array_slice($data['words'], 0, 10);
+        }
+        return $data;
     }
     return null;
 }
 
+// --- LOGIC CHÍNH ---
 $response = [ 'found' => false, 'keyword' => $keyword, 'error_code' => null, 'data' => [ 'words' => [], 'sentences' => [] ] ];
 
 if ($keyword !== '') {
     $keywordRaw = mb_strtolower($keyword, 'UTF-8');
 
-    // --- CASE 1: TÌM TRONG SÁCH (LOCAL) ---
+    // 1. TÌM LOCAL
     if ($action == 'search') {
         $keywordNoTone = removeTone($keywordRaw);
         $keywordNoAccents = removeAllAccents($keywordRaw);
         $isBroadMode = ($keywordNoTone === $keywordNoAccents); 
-        $foundLocalWords = [];
         $foundKeyMatch = false;
+        $foundLocalWords = [];
 
-        // 1. Tìm theo Key
         foreach ($dictionary as $lessonKey => $content) {
             $subKeys = preg_split("/[\s,]+/", $lessonKey);
             $isMatch = false;
@@ -131,7 +183,7 @@ if ($keyword !== '') {
                     foreach ($content['words'] as $word) {
                         if (!in_array($word, $foundLocalWords)) {
                             $foundLocalWords[] = $word;
-                            $response['data']['words'][] = ['text' => $word]; // Local không có flag is_ai
+                            $response['data']['words'][] = ['text' => $word];
                         }
                     }
                 }
@@ -143,7 +195,6 @@ if ($keyword !== '') {
             }
         }
 
-        // 2. Fallback tìm trong word
         if (!$foundKeyMatch) {
             foreach ($dictionary as $lessonKey => $content) {
                 if (isset($content['words'])) {
@@ -152,8 +203,11 @@ if ($keyword !== '') {
                         $wordNoTone = removeTone($wordRaw);
                         $wordNoAccents = removeAllAccents($wordRaw);
                         $isWordMatch = false;
-                        if ($isBroadMode) { if (strpos($wordNoAccents, $keywordNoAccents) !== false) $isWordMatch = true; } 
-                        else { if (strpos($wordNoTone, $keywordNoTone) !== false) $isWordMatch = true; }
+                        if ($isBroadMode) {
+                            if (strpos($wordNoAccents, $keywordNoAccents) !== false) $isWordMatch = true;
+                        } else {
+                            if (strpos($wordNoTone, $keywordNoTone) !== false) $isWordMatch = true;
+                        }
                         
                         if ($isWordMatch) {
                             if (!in_array($word, $foundLocalWords)) {
@@ -174,7 +228,7 @@ if ($keyword !== '') {
         }
     }
 
-    // --- CASE 2: HỎI AI (ASK_AI) ---
+    // 2. XỬ LÝ AI
     else if ($action == 'ask_ai') {
         $checkLimit = checkUsageLimit($userIP, $userPass, $MAX_FREE_LIMIT, $ADMIN_PASS, $USAGE_FILE);
         if ($checkLimit['allowed'] === false) {
@@ -190,7 +244,10 @@ if ($keyword !== '') {
                 if ($aiResult) {
                     $aiDatabase[$keywordRaw] = $aiResult;
                     file_put_contents($AI_DB_FILE, json_encode($aiDatabase, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
-                    if (!$checkLimit['is_vip']) incrementUsage($userIP, $USAGE_FILE);
+                    
+                    if (!$checkLimit['is_vip']) {
+                        incrementUsage($userIP, $USAGE_FILE);
+                    }
                 }
             }
 
@@ -198,7 +255,6 @@ if ($keyword !== '') {
                 $response['found'] = true; 
                 if (isset($aiResult['words'])) {
                     foreach ($aiResult['words'] as $w) {
-                        // AI luôn có cờ is_ai = true
                         $response['data']['words'][] = ['text' => $w, 'is_ai' => true];
                     }
                 }
